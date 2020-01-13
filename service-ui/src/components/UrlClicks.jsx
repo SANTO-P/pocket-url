@@ -42,7 +42,12 @@ class UrlClicks extends React.Component {
             this.setState({
               clicks: undefined
             });
-            message.error(result.response.data);
+            message.error(
+              (result.response &&
+                result.response.data &&
+                result.response.data) ||
+                "Error"
+            );
           }
         });
       }

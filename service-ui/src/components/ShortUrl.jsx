@@ -61,7 +61,13 @@ class ShortUrl extends React.Component {
             this.setState({
               shortUrl: undefined
             });
-            message.error(result.response.data);
+
+            message.error(
+              (result.response &&
+                result.response.data &&
+                result.response.data) ||
+                "Error"
+            );
           }
         });
       }

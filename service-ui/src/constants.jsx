@@ -4,4 +4,6 @@ const routes = {
   aboutUsRoute: "/aboutus"
 };
 
-export { routes };
+const hostName = "https://pocket-url-backend.herokuapp.com";
+
+export { routes, hostName };
