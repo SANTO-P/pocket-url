@@ -1,11 +1,11 @@
-import { Input, Button, Checkbox } from "antd";
+import { Input, Button, Checkbox, Form } from "antd";
 import React from "react";
 import { getShortURL } from "../service/UrlShortenService";
-import { Typography } from "antd";
+import { message, Typography } from "antd";
 
 const { Paragraph } = Typography;
 
-export default class ShortUrl extends React.Component {
+class ShortUrl extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -28,29 +28,44 @@ export default class ShortUrl extends React.Component {
     });
   };
 
-  getPocketURL = () => {
-    let { longUrl } = this.state;
+  getPocketURL = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (err) {
+        console.log("err");
+        return;
+      } else {
+        let { longUrl } = this.state;
 
-    let params = {
-      longUrl: longUrl,
-      customUrl: {
-        flag: false,
-        value: null
+        let params = {
+          longUrl: longUrl,
+          customUrl: {
+            flag: false,
+            value: null
+          }
+        };
+
+        if (this.state.isCustom) {
+          params.customUrl = {
+            flag: true,
+            value: this.state.customValue
+          };
+        }
+
+        getShortURL(params).then(result => {
+          if (result.data !== undefined) {
+            this.setState({
+              shortUrl: result.data.shortUrl
+            });
+          } else {
+            this.setState({
+              shortUrl: undefined
+            });
+            message.error(result.response.data);
+          }
+        });
       }
-    };
-
-    if (this.state.isCustom) {
-      params.customUrl = {
-        flag: true,
-        value: this.state.customValue
-      };
-    }
-
-    getShortURL(params).then(result =>
-      this.setState({
-        shortUrl: result.shortUrl
-      })
-    );
+    });
   };
 
   handleCustomValueChange = event => {
@@ -61,26 +76,41 @@ export default class ShortUrl extends React.Component {
 
   render() {
     const { isCustom } = this.state;
+    const { getFieldDecorator } = this.props.form;
 
     return (
-      <div className="url-input-wrapper">
-        <Input
-          placeholder="Enter long URL"
-          allowClear
-          autoFocus
-          onChange={this.handleLongUrlChange}
-        />
+      <Form className="url-input-wrapper" onSubmit={this.getPocketURL}>
+        <Form.Item>
+          {getFieldDecorator("longUrl", {
+            rules: [{ required: true, message: "Please enter the long URL!" }]
+          })(
+            <Input
+              placeholder="Enter long URL"
+              allowClear
+              autoFocus
+              onChange={this.handleLongUrlChange}
+            />
+          )}
+        </Form.Item>
 
         {isCustom === true ? (
-          <Input
-            allowClear
-            addonBefore="www.pocketurl/"
-            placeholder="Custom Name"
-            onChange={this.handleCustomValueChange}
-          />
+          <Form.Item>
+            {getFieldDecorator("customValue", {
+              rules: [
+                { required: true, message: "Please enter the custom name!" }
+              ]
+            })(
+              <Input
+                allowClear
+                addonBefore="www.pocketurl/"
+                placeholder="Custom Name"
+                onChange={this.handleCustomValueChange}
+              />
+            )}
+          </Form.Item>
         ) : null}
 
-        <Button type="primary" block onClick={this.getPocketURL}>
+        <Button type="primary" block htmlType="submit">
           Get your Pocket Sized URL!
         </Button>
 
@@ -91,7 +121,9 @@ export default class ShortUrl extends React.Component {
         {this.state.shortUrl !== undefined ? (
           <Paragraph copyable>{this.state.shortUrl}</Paragraph>
         ) : null}
-      </div>
+      </Form>
     );
   }
 }
+
+export default Form.create()(ShortUrl);

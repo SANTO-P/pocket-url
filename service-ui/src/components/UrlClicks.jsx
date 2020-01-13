@@ -1,11 +1,11 @@
-import { Input, Button } from "antd";
+import { Input, Button, Form } from "antd";
 import React from "react";
 import { getURLstatistics } from "../service/UrlStatisticsService";
-import { Typography } from "antd";
+import { message, Typography } from "antd";
 
 const { Title } = Typography;
 
-export default class UrlClicks extends React.Component {
+class UrlClicks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,31 +20,54 @@ export default class UrlClicks extends React.Component {
     });
   };
 
-  getClicks = () => {
-    let { shortUrl } = this.state;
+  getClicks = e => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (err) {
+        console.log("err");
+        return;
+      } else {
+        let { shortUrl } = this.state;
 
-    let params = {
-      shortUrl: shortUrl
-    };
+        let params = {
+          shortUrl: shortUrl
+        };
 
-    getURLstatistics(params).then(result =>
-      this.setState({
-        clicks: result
-      })
-    );
+        getURLstatistics(params).then(result => {
+          if (result.data !== undefined) {
+            this.setState({
+              clicks: result.data
+            });
+          } else {
+            this.setState({
+              clicks: undefined
+            });
+            message.error(result.response.data);
+          }
+        });
+      }
+    });
   };
 
   render() {
-    return (
-      <div className="url-input-wrapper">
-        <Input
-          placeholder="Enter short URL"
-          allowClear
-          autoFocus
-          onChange={this.handleShortUrlChange}
-        />
+    const { getFieldDecorator } = this.props.form;
 
-        <Button type="primary" block onClick={this.getClicks}>
+    return (
+      <Form className="url-input-wrapper" onSubmit={this.getClicks}>
+        <Form.Item>
+          {getFieldDecorator("shortUrl", {
+            rules: [{ required: true, message: "Please enter the short URL!" }]
+          })(
+            <Input
+              placeholder="Enter short URL"
+              allowClear
+              autoFocus
+              onChange={this.handleShortUrlChange}
+            />
+          )}
+        </Form.Item>
+
+        <Button type="primary" block htmlType="submit">
           Get your Pocket URL statistics!
         </Button>
         {this.state.clicks !== undefined ? (
@@ -54,7 +77,9 @@ export default class UrlClicks extends React.Component {
             <Title level={3}>This URL was hit {this.state.clicks} times</Title>
           </div>
         ) : null}
-      </div>
+      </Form>
     );
   }
 }
+
+export default Form.create()(UrlClicks);

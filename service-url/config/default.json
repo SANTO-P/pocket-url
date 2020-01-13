@@ -1,5 +1,4 @@
 {
-  //"mongoURI": "mongodb+srv://santosh-patil:pass@1234@cluster0-scmtx.gcp.mongodb.net/test?retryWrites=true&w=majority",
   "mongoURI": "mongodb://mongo:27017/service-url",
   "baseUrl": "http://localhost:5000"
 }

@@ -2,6 +2,7 @@ const config = require("config");
 const url = require("url");
 const shortid = require("shortid");
 const validUrl = require("valid-url");
+const isUrl = require("is-url");
 
 const Url = require("../models/Url");
 
@@ -21,17 +22,17 @@ const shortenUrl = async longUrl => {
     errorMessage: undefined
   };
 
-  if (!validUrl.isUri(baseUrl)) {
+  if (!isUrl(baseUrl)) {
     result = {
       status: 401,
-      errorMessage: "Invalid Base Url..."
+      errorMessage: "Invalid base url"
     };
     return result;
   }
 
   longUrl = formatUrl(longUrl);
 
-  if (validUrl.isUri(longUrl)) {
+  if (isUrl(longUrl)) {
     try {
       let url = await Url.findOne({ longUrl });
 
@@ -66,14 +67,14 @@ const shortenUrl = async longUrl => {
     } catch (err) {
       result = {
         status: 500,
-        errorMessage: "Server error..."
+        errorMessage: "Server error"
       };
       return result;
     }
   } else {
     result = {
       status: 422,
-      errorMessage: "Invalid Long Url..."
+      errorMessage: "Invalid long url"
     };
     return result;
   }
@@ -87,17 +88,17 @@ const shortenWithCustomUrl = async (longUrl, urlCode) => {
     errorMessage: undefined
   };
 
-  if (!validUrl.isUri(baseUrl)) {
+  if (!isUrl(baseUrl)) {
     result = {
       status: 401,
-      errorMessage: "Invalid Base Url..."
+      errorMessage: "Invalid base url"
     };
     return result;
   }
 
   longUrl = formatUrl(longUrl);
 
-  if (validUrl.isUri(longUrl)) {
+  if (isUrl(longUrl)) {
     try {
       let url = await Url.findOne({ longUrl });
       if (url) {
@@ -108,7 +109,7 @@ const shortenWithCustomUrl = async (longUrl, urlCode) => {
       if (customUrlCode) {
         result = {
           status: 401,
-          url: "Custom url already exists..."
+          errorMessage: "Custom url already exists"
         };
         return result;
       }
@@ -131,14 +132,14 @@ const shortenWithCustomUrl = async (longUrl, urlCode) => {
     } catch (err) {
       result = {
         status: 500,
-        url: "Server error..."
+        errorMessage: "Server error"
       };
       return result;
     }
   } else {
     result = {
       status: 422,
-      url: "Invalid Long Url..."
+      errorMessage: "Invalid long url"
     };
     return result;
   }

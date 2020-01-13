@@ -14,9 +14,11 @@
   "dependencies": {
     "config": "^3.2.4",
     "express": "^4.17.1",
+    "is-url": "^1.2.4",
     "mongoose": "^5.8.6",
     "redis": "^2.8.0",
     "shortid": "^2.2.15",
+    "url-exists": "^1.0.3",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {

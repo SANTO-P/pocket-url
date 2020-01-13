@@ -3,6 +3,7 @@ services:
   app:
     container_name: service-ui
     restart: always
+    image: service-ui:latest
     build: .
     ports:
       - "3000:3000"

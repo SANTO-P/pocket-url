@@ -3,6 +3,7 @@ services:
   app:
     container_name: service-url
     restart: always
+    image: service-url:latest
     build: .
     ports:
       - "5000:5000"

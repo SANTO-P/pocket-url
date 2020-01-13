@@ -27,7 +27,11 @@ router.post("/statistics", async (req, res) => {
 
   let url = await Url.findOne({ shortUrl });
 
-  res.status(200).json(url.hitCount);
+  if (url) {
+    res.status(200).json(url.hitCount);
+  } else {
+    res.status(404).json("Unknown short url");
+  }
 });
 
 module.exports = router;
