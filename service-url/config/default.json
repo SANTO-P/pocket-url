@@ -1,4 +1,4 @@
 {
   "mongoURI": "mongodb://mongo:27017/service-url",
-  "baseUrl": "http://localhost:5000"
+  "baseUrl": "http://pocket-url"
 }
